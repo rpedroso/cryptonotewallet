@@ -192,6 +192,7 @@ public:
     });
 
     m_nodeServer.run();
+    m_core.deinit();
     m_nodeServer.deinit();
     m_node.shutdown();
   }
