@@ -26,6 +26,10 @@ else(WIN32)
   set(Boost_USE_STATIC_RUNTIME ON)
 endif(WIN32)
 
+# This prevents problems with find_package() if multiple versions of
+# Boost already exist on the system
+set(Boost_NO_BOOST_CMAKE ON)
+
 find_package(Boost 1.55 REQUIRED COMPONENTS date_time filesystem program_options regex serialization system thread chrono)
 if ((${Boost_MAJOR_VERSION} EQUAL 1) AND (${Boost_MINOR_VERSION} EQUAL 54))
 	message(SEND_ERROR "Boost version 1.54 is unsupported, more details are available here http://goo.gl/RrCFmA")
@@ -67,8 +71,9 @@ set(CRYPTONOTE_SOURCES
   cryptonote/src/Common/StringOutputStream.cpp
   cryptonote/src/Common/StringView.cpp
   cryptonote/src/Common/VectorOutputStream.cpp
+  cryptonote/src/crypto/balloon.c
   cryptonote/src/crypto/blake256.c
-  cryptonote/src/crypto/chacha8.c
+  cryptonote/src/crypto/chacha.c
   cryptonote/src/crypto/crypto-ops-data.c
   cryptonote/src/crypto/crypto-ops.c
   cryptonote/src/crypto/crypto.cpp
@@ -86,6 +91,7 @@ set(CRYPTONOTE_SOURCES
   cryptonote/src/crypto/slow-hash.c
   cryptonote/src/crypto/slow-hash.cpp
   cryptonote/src/crypto/tree-hash.c
+  cryptonote/src/CryptoNoteCore/CryptoNoteFormatUtils.cpp
   cryptonote/src/CryptoNoteCore/BlockchainIndices.cpp
   cryptonote/src/CryptoNoteCore/BlockchainMessages.cpp
   cryptonote/src/CryptoNoteCore/BlockIndex.cpp
@@ -96,11 +102,12 @@ set(CRYPTONOTE_SOURCES
   cryptonote/src/CryptoNoteCore/MinerConfig.cpp
   cryptonote/src/CryptoNoteCore/Transaction.cpp
   cryptonote/src/CryptoNoteCore/Account.cpp
+  cryptonote/src//CryptoNoteCore/DepositIndex.cpp
   cryptonote/src/CryptoNoteCore/Blockchain.cpp
   cryptonote/src/CryptoNoteCore/Checkpoints.cpp
   cryptonote/src/CryptoNoteCore/CryptoNoteBasicImpl.cpp
   cryptonote/src/CryptoNoteCore/Core.cpp
-  cryptonote/src/CryptoNoteCore/CryptoNoteFormatUtils.cpp
+  # cryptonote/src/CryptoNoteCore/CryptoNoteFormatUtils.cpp
   cryptonote/src/CryptoNoteCore/CryptoNoteSerialization.cpp
   cryptonote/src/CryptoNoteCore/Difficulty.cpp
   cryptonote/src/CryptoNoteCore/IBlock.cpp
@@ -127,6 +134,7 @@ set(CRYPTONOTE_SOURCES
   cryptonote/src/Transfers/TransfersContainer.cpp
   cryptonote/src/Transfers/TransfersSubscription.cpp
   cryptonote/src/Transfers/TransfersSynchronizer.cpp
+  cryptonote/src/Mnemonics/electrum-words.cpp
   cryptonote/src/Wallet/LegacyKeysImporter.cpp
   cryptonote/src/Wallet/WalletAsyncContextCounter.cpp
   cryptonote/src/Wallet/WalletErrors.cpp
@@ -223,8 +231,8 @@ elseif (UNIX)
     GET_FILENAME_COMPONENT(QT_LIB_DIR "${QT_LIB_DIR}" PATH)
   else(APPLE)
     set(PLATFORM_DIR Linux)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -maes -std=c++11")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -maes -std=c11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -maes -std=c++11")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -maes -std=c11")
   endif (APPLE)
 endif ()
 
